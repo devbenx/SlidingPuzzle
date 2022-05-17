@@ -6,7 +6,7 @@ function App() {
 
       return (
             <div className="App">
-                  <Puzzle grid={{ rows: 3, cols: 3 }}></Puzzle>
+                  <Puzzle />
             </div>
       );
 }

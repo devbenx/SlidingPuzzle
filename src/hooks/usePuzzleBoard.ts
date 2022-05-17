@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Custom hook for board => Array
-export const usePuzzleBoard = (rows: number, cols: number) => {
+export const usePuzzleBoard = () => {
 
-      const [boardArray, setBoardArray] = useState<number[]>([...Array.from(Array(rows * cols).keys())]);
+      const [grid, setGrid] = useState({ cols: 3, rows: 3 });
+      const [boardArray, setBoardArray] = useState<number[]>([...Array.from(Array(grid.rows * grid.cols).keys())]);
+
+      useEffect(() => {
+
+            setBoardArray([...Array.from(Array(grid.rows * grid.cols).keys())])
+
+      }, [grid])
+
 
       const isSolved = (board: number[]) => {
             for (let i = 0, l = board.length; i < l; i++) {
@@ -27,14 +35,14 @@ export const usePuzzleBoard = (rows: number, cols: number) => {
 
       const shuffle: (board: number[]) => any = (board: number[]) => { //Check
 
-            const shuffledBoardArray = [
-                  ...board
-                        .filter((t) => t !== board.length - 1)
-                        .sort(() => Math.random() - 0.5),
-                  board.length - 1,
-            ];
-
-            const res = isSolvable(shuffledBoardArray) && !isSolved(shuffledBoardArray) ? setBoardArray(shuffledBoardArray) : shuffle(shuffledBoardArray);
+            for (let i = board.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [board[i], board[j]] = [board[j], board[i]];
+            }
+            // const shuffledBoardArray = [...board.sort(() => Math.random() - 0.5)];
+            // .filter((t) => t !== board.length - 1)
+            // board.length - 1,
+            const res = isSolvable(board) && !isSolved(board) ? setBoardArray(board) : shuffle(board);
 
             return res;
 
@@ -44,8 +52,8 @@ export const usePuzzleBoard = (rows: number, cols: number) => {
       const matrixPosition = (index: number) => {
 
             const pos = {
-                  row: Math.floor(index / cols),
-                  col: index % cols,
+                  row: Math.floor(index / grid.cols),
+                  col: index % grid.cols,
             }
 
             // console.log(`pos_col: ${pos.col}, pos_row: ${pos.row}`)
@@ -90,6 +98,8 @@ export const usePuzzleBoard = (rows: number, cols: number) => {
 
 
       return {
+            grid,
+            setGrid,
             boardArray,
             isSolved,
             isSolvable,
@@ -103,9 +113,5 @@ export const usePuzzleBoard = (rows: number, cols: number) => {
                   beforeSwapCheck,
                   sort
             },
-            props: {
-                  rows,
-                  cols
-            }
       }
 }
