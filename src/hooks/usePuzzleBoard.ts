@@ -35,11 +35,11 @@ export const usePuzzleBoard = () => {
 
       const shuffle: (board: number[]) => any = (board: number[]) => { //Check
 
-            // for (let i = board.length - 1; i > 0; i--) {
-            //       const j = Math.floor(Math.random() * (i + 1));
-            //       [board[i], board[j]] = [board[j], board[i]];
-            // }
-            const shuffledBoardArray = [...board.sort(() => Math.random() - 0.5)];
+            for (let i = board.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [board[i], board[j]] = [board[j], board[i]];
+            }
+            // const shuffledBoardArray = [...board.sort(() => Math.random() - 0.5)];
             // .filter((t) => t !== board.length - 1)
             // board.length - 1,
             const res = isSolvable(board) && !isSolved(board) ? setBoardArray(board) : shuffle(board);

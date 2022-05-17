@@ -139,7 +139,7 @@ const Puzzle: FC = () => {
 
                               <StyledLabel htmlFor="rows">rows:</StyledLabel>
                               <StyledSelect id="rows" onChange={event => board.setGrid({ ...board.grid, rows: Number(event.target.value) })} >
-                                    {[...Array.from(Array(12).keys())].map((index) => {
+                                    {[...Array.from(Array(12).keys()).filter((row) => row > 2)].map((index) => {
                                           return <option value={index} key={index}>{index}</option>
 
                                     })}
@@ -147,7 +147,7 @@ const Puzzle: FC = () => {
 
                               <StyledLabel htmlFor="cols">cols:</StyledLabel>
                               <StyledSelect id="cols" onChange={event => board.setGrid({ ...board.grid, cols: Number(event.target.value) })} >
-                                    {[...Array.from(Array(12).keys())].map((index) => {
+                                    {[...Array.from(Array(12).keys()).filter((col) => col > 2)].map((index) => {
                                           return <option value={index} key={index}>{index}</option>
 
                                     })}
@@ -183,9 +183,9 @@ const StyledSelect = styled('select')`
       border-radius: 5px;
       font-weight: bold;
       text-transform: uppercase;
-      border: 1px solid #97cd4d;
+      border: 2px solid #97cd4d;
       &:hover{
-            border: 1px solid #f674da;   
+            border: 2px solid #f674da;   
       }       
 `
 
@@ -203,25 +203,25 @@ interface IBoard {
 
 const Board = styled('ul') <IBoard>`
 
-                                          display: flex;
-                                          flex-wrap: wrap;
-                                          justify-content: center;
-                                          align-items: center;
-                                          align-self: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      align-self: center;
 
-                                          list-style: none;
-                                          padding: 0;
-                                          margin: auto;
-                                          height: ${props => props.height}px;
-                                          width: 100%;
-                                          max-width: 650px;
-                                          max-height: 650px;
-                                          font-size: 1rem;
-                                          text-align: center;
-                                          background-color: #97cd4d;
-                                          outline: 0.2rem solid ${props => props.gameSolved ? '#97cd4d' : '#f674da'};
+      list-style: none;
+      padding: 0;
+      margin: 1rem;
+      height: ${props => props.height}px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 650px;
+      font-size: 1rem;
+      text-align: center;
+      background-color: #97cd4d;
+      outline: 0.2rem solid ${props => props.gameSolved ? '#97cd4d' : '#f674da'};
 
-                                          `;
+`;
 
 const Title = styled.h1`
                                           color: #bee5fd;
@@ -230,61 +230,63 @@ const Title = styled.h1`
 
 const WinningDiv = styled(motion.div)`
 
-                                          position: absolute;
-                                          width: auto;
-                                          height: auto;
-                                          padding: 2rem;
-                                          margin: auto;
-                                          display: flex;
-                                          justify-content: center;
-                                          align-items: center;
-                                          font-size: 10vmin;
-                                          font-weight: bold;
-                                          background-color: #bee5fd;
-                                          color: #f674da;
-                                          border-radius: 1rem;
+      position: absolute;
+      width: auto;
+      height: auto;
+      padding: 2rem;
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 10vmin;
+      font-weight: bold;
+      background-color: #bee5fd;
+      color: #f674da;
+      border-radius: 1rem;
 
-                                          `;
+`;
 
 const ButtonContainer = styled('div')`
 
-                                          width: 100%;
-                                          height: auto;
+      width: 100%;
+      height: auto;
 
-                                          display: flex;
-                                          flex-direction: row;
-                                          justify-content: center;
-                                          align-items: center;
-                                          margin: 1rem 0;
-                                          gap: 1rem;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem 0;
+      gap: 1rem;
       >button{
-                                                padding: 1rem;
-                                          color:  #bee5fd;
-                                          background-color: #3a4786;
-                                          border-radius: 5px;
-                                          font-weight: bold;
-                                          text-transform: uppercase;
-                                          border: 2px solid #97cd4d;
-                                          &:hover{
-                                                border: 2px solid #f674da;
+            padding: 1rem;
+            color:  #bee5fd;
+            background-color: #3a4786;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 2px solid #97cd4d;
+            &:hover{
+                  border: 2px solid #f674da;
             }
       }
-
-                                          `;
+      @media (max-width: 500px) {
+            flex-direction: column;
+      }
+`;
 
 // BOARD CONTAINER
 const StyledBoardContainer = styled('div')`
 
-                                          width: 96vw;
-                                          height: 96vh;
+      width: 96vw;
+      height: 96vh;
 
-                                          display: flex;
-                                          flex-direction: column;
-                                          justify-content: center;
-                                          align-items: center;
-                                          margin: 2vh auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 2vh auto;
 
-                                          `;
+`;
 
 // #97cd4d
 // #3a4766
