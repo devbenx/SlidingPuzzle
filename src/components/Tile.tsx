@@ -47,9 +47,9 @@ const Tile: FC<{
 }> = ({ size, id, imgurl, last, handleClick, boardwidth, index, children, grid, gameSolved }) => {
 
       const onClickHandler = () => {
-
-            handleClick(index)
-
+            if (!last) {
+                  handleClick(index)
+            }
       }
       const tileProps = {
             imgPos: {
