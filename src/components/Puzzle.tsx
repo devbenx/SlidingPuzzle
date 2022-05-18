@@ -139,7 +139,7 @@ const Puzzle: FC = () => {
 
                               <StyledLabel htmlFor="rows">rows:</StyledLabel>
                               <StyledSelect id="rows" onChange={event => board.setGrid({ ...board.grid, rows: Number(event.target.value) })} >
-                                    {[...Array.from(Array(12).keys()).filter((row) => row > 2)].map((index) => {
+                                    {[...Array.from(Array(12).keys()).filter((row) => row > 1)].map((index) => {
                                           return <option value={index} key={index}>{index}</option>
 
                                     })}
@@ -147,7 +147,7 @@ const Puzzle: FC = () => {
 
                               <StyledLabel htmlFor="cols">cols:</StyledLabel>
                               <StyledSelect id="cols" onChange={event => board.setGrid({ ...board.grid, cols: Number(event.target.value) })} >
-                                    {[...Array.from(Array(12).keys()).filter((col) => col > 2)].map((index) => {
+                                    {[...Array.from(Array(12).keys()).filter((col) => col > 1)].map((index) => {
                                           return <option value={index} key={index}>{index}</option>
 
                                     })}
@@ -211,11 +211,11 @@ const Board = styled('ul') <IBoard>`
 
       list-style: none;
       padding: 0;
-      margin: 1rem;
+      margin: 0;
       height: ${props => props.height}px;
       width: 100%;
-      max-width: 650px;
-      max-height: 650px;
+      max-width: 625px;
+      max-height: 625px;
       font-size: 1rem;
       text-align: center;
       background-color: #97cd4d;
@@ -224,8 +224,10 @@ const Board = styled('ul') <IBoard>`
 `;
 
 const Title = styled.h1`
-                                          color: #bee5fd;
-                                          `;
+      color: #bee5fd;
+      line-height: 1.7;
+      margin: auto;
+`;
 
 
 const WinningDiv = styled(motion.div)`
@@ -257,6 +259,7 @@ const ButtonContainer = styled('div')`
       align-items: center;
       margin: 1rem 0;
       gap: 1rem;
+
       >button{
             padding: 1rem;
             color:  #bee5fd;
@@ -277,14 +280,14 @@ const ButtonContainer = styled('div')`
 // BOARD CONTAINER
 const StyledBoardContainer = styled('div')`
 
-      width: 96vw;
-      height: 96vh;
+      min-height: 100vh;
 
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      margin: 2vh auto;
+      margin: auto;
+      padding: 0 0.7rem;
 
 `;
 
