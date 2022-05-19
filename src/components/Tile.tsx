@@ -89,7 +89,7 @@ const StyledTile = styled(motion.li) <ITile>`
       align-items: center;
       justify-content: center;
       outline: 0.2rem solid ${props => props.gamesolved === 1 ? '#97cd4d' : '#f674da'};
-      transition: all 0.4s;
+      /* transition: all 0.4s; ON HOVER ISSUES */ 
 
       ${({ last }) => (last === 1) && `
             background: #3a4766;
