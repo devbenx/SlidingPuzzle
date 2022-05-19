@@ -9,10 +9,15 @@ enum ICharacterState {
 }
 
 // Custom hook for fetching RickMorty Character => Array
-export const useCharacter = () => {
+const useCharacter = () => {
 
       const [id, setId] = useState(Math.round(Math.random() * 826));
       const [character, setCharacter] = useState<Character | null>(null);
+      const defStates = {
+            LOADING: 'LOADING',
+            LOADED: 'LOADED',
+            ERROR: 'ERROR',
+      };
       const [characterState, setCharacterState] = useState<ICharacterState>(ICharacterState.LOADING);
 
       const changeCharacter = () => {
@@ -51,5 +56,7 @@ export const useCharacter = () => {
 
       }, [id])
 
-      return { character, characterState, changeCharacter };
+      return { character, characterState, changeCharacter, defStates };
 }
+
+export default useCharacter;

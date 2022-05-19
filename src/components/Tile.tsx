@@ -4,14 +4,14 @@ import styled from "styled-components"
 
 // BOARD PIECE
 interface ITile {
-      readonly size: {
+      size: {
             width: number,
             height: number,
       },
-      readonly gamesolved: number,
-      readonly last: number,
-      readonly imgurl: string,
-      readonly tileprops: {
+      gamesolved: number,
+      last: number,
+      imgurl: string,
+      tileprops: {
             imgSize: {
                   width: number,
                   height: number,
@@ -21,67 +21,58 @@ interface ITile {
                   height: number,
             }
       }
-}
-
-interface ISize {
-      width: number,
-      height: number
-}
-
-interface IGrid {
-      rows: number,
-      cols: number
 }
 
 const Tile: FC<{
-      grid: IGrid,
-      size: ISize,
+      puzzle: any,
       id: number,
-      imgurl: string,
-      last: boolean,
       handleClick: (index: number) => void,
-      boardwidth: number,
       index: number,
       children: ReactNode,
-      gameSolved: boolean,
-}> = ({ size, id, imgurl, last, handleClick, boardwidth, index, children, grid, gameSolved }) => {
+}> =
+      ({ puzzle, id, handleClick, index, children }) => {
 
-      const onClickHandler = () => {
-            if (!last) {
-                  handleClick(index)
+            const isLast = (id === (puzzle.boardArray.length - 1)) ? true : false;
+
+            const onClickHandler = () => {
+
+                  if (!isLast) {
+                        handleClick(index)
+                  }
+                  console.log({ id }, { index })
             }
-      }
-      const tileProps = {
-            imgPos: {
-                  width: -(1 / grid.cols) * (id % grid.cols) * boardwidth,
-                  height: -(1 / grid.rows) * Math.floor(id / (grid.cols)) * boardwidth
-            },
-            imgSize: {
-                  width: boardwidth,
-                  height: boardwidth
-            },
+
+            const tileProps = {
+
+                  imgPos: {
+                        width: -(1 / puzzle.grid.cols) * (id % puzzle.grid.cols) * puzzle.container.size,
+                        height: -(1 / puzzle.grid.rows) * Math.floor(id / (puzzle.grid.cols)) * puzzle.container.size
+                  },
+                  imgSize: {
+                        width: puzzle.container.size,
+                        height: puzzle.container.size,
+                  },
+            }
+
+            return (
+                  <StyledTile
+                        gamesolved={puzzle.state.solved ? 1 : 0}
+                        initial={{ scale: 0.95 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0.9 }}
+                        size={puzzle.tile.size}
+                        key={id}
+                        imgurl={puzzle.character.character.image}
+                        tileprops={tileProps}
+                        last={isLast ? 1 : 0}
+                        onClick={() => onClickHandler()}
+                        layout
+                  >
+                        {children}
+                  </StyledTile>
+            )
 
       }
-
-      return (
-            <StyledTile
-                  gamesolved={gameSolved ? 1 : 0}
-                  initial={{ scale: 0.95 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0.9 }}
-                  size={size}
-                  key={id}
-                  imgurl={imgurl}
-                  tileprops={tileProps}
-                  last={last ? 1 : 0}
-                  onClick={() => onClickHandler()}
-                  layout
-            >
-                  {children}
-            </StyledTile>
-      )
-
-}
 
 const StyledTile = styled(motion.li) <ITile>`
       display: grid;
@@ -98,10 +89,16 @@ const StyledTile = styled(motion.li) <ITile>`
       align-items: center;
       justify-content: center;
       outline: 0.2rem solid ${props => props.gamesolved === 1 ? '#97cd4d' : '#f674da'};
+      transition: all 0.4s;
 
       ${({ last }) => (last === 1) && `
             background: #3a4766;
       `}
+
+      &:hover{
+            outline:  ${props => props.last === 1 ? `0.2rem solid ${props.gamesolved === 1 ? '#97cd4d' : '#f674da'}` : '0.5rem solid #bee5fd'};
+            z-index:  ${props => props.last === 1 ? 'unset' : 100};
+      }
 `;
 
 export default Tile;

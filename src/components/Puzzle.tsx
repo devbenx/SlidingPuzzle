@@ -1,163 +1,82 @@
-import { Children, Component, FC, HTMLAttributes, ReactNode, useEffect, useRef, useState } from "react";
-import React from 'react'
+import { FC, ReactNode } from "react";
 import styled from 'styled-components';
-import axios, { AxiosError } from "axios";
-import { Character } from '../../types/RMCharacter'
 import { motion } from "framer-motion"
-import { usePuzzleBoard } from "../hooks/usePuzzleBoard";
+import usePuzzle from "../hooks/usePuzzle";
 import Tile from "./Tile";
-import { useCharacter } from "../hooks/useCharacter";
-
-
-interface IGrid {
-      rows: number,
-      cols: number
-}
-
-enum ICharacterState {
-      LOADING = 'LOADING',
-      LOADED = 'LOADED',
-      ERROR = 'ERROR',
-}
 
 const Puzzle: FC = () => {
 
-      // Game logic
-      const [gameStarted, setGameStarted] = useState(false);
-      const [gameSolved, setGameSolved] = useState(false);
-      const [moves, setMoves] = useState(0);
+      // usePuzzle Custom Hook => object props
+      const puzzle = usePuzzle();
 
-      const board = usePuzzleBoard();
+      const handleShuffle = () => puzzle.shuffle();
 
-      // Getting the image from Rick & Morty API
-      const character = useCharacter();
-      // const [character, setCharacter] = useState<Character | null>(null);
-      const [characterId, setCharacterId] = useState(Math.round(Math.random() * 826));
-      // const [characterState, setCharacterState] = useState<ICharacterState>(ICharacterState.LOADING);
+      const handleStartGame = () => puzzle.game.startGame();
 
-      const handleShuffle = () => {
+      const handleRestartGame = () => puzzle.game.restartGame();
 
-            board.shuffle(board.boardArray);
-            setGameStarted(true);
+      const handleCharacterChange = () => puzzle.character.changeCharacter();
 
-      }
-
-      const handleRestartGame = () => {
-
-            setCharacterId(Math.round(Math.random() * 826))
-            setGameStarted(false);
-            board.do.sort(board.boardArray)
-
-      }
-
-      const handleCharacterChange = () => {
-
-            character.changeCharacter();
-
-      }
-
-      const handleTileClick = (index: number) => {
-            if (gameStarted) {
-                  setMoves(prev => prev + 1);
-                  board.do.swapTiles(index, board.boardArray.length - 1);
-                  console.log(`gameSolved: ${gameSolved}`)
-            }
-      }
-
-      // Board Component
-      const [boardSize, setBoardSize] = useState(0);
-      const [tileSize, setTileSize] = useState({ width: 0, height: 0 });
-      const boardRef = useRef<HTMLUListElement>(null)
-
-      useEffect(() => {
-
-            const handleResize = () => {
-                  if (boardRef.current) {
-                        setBoardSize(Math.floor(boardRef.current.clientWidth));
-                        setTileSize({
-                              width: Math.floor(boardSize / board.grid.cols) - 0.1,
-                              height: Math.floor(boardSize / board.grid.rows) - 0.1,
-                        })
-                        console.log(`hookRef width: ${boardRef.current.clientWidth}`);
-                  }
-            }
-
-            window.addEventListener('resize', handleResize)
-
-            if (typeof window !== "undefined") {
-                  handleResize();
-            }
-
-            return () => {
-                  window.removeEventListener('resize', handleResize)
-            }
-
-      }, [boardSize, board.grid]);
-
-
-      useEffect(() => {
-
-            if (gameStarted) {
-                  setGameSolved(board.isSolved(board.boardArray))
-            }
-
-      }, [board])
-
-
+      const handleTileClick = (index: number) => puzzle.tile.onClick(index);
 
       return (
             <BoardContainer>
 
-                  <Title>{character.character?.name}</Title>
+                  <Title>{puzzle.character.character?.name}</Title>
 
-                  <Board ref={boardRef} height={boardSize} gameSolved={gameSolved}>
-                        {character.characterState === ICharacterState.ERROR && <h1>Ups Something Happened!</h1>}
-                        {character.characterState === ICharacterState.LOADING && <h1>Loading...</h1>}
-                        {character.characterState === ICharacterState.LOADED && character.character && board.boardArray.map((tile, index) => {
-                              return <Tile
-                                    size={{ width: tileSize.width, height: tileSize.height }}
-                                    id={tile}
-                                    imgurl={character.character!.image}
-                                    boardwidth={boardSize}
-                                    grid={board.grid}
-                                    last={(tile === (board.boardArray.length - 1) ? true : false)}
-                                    index={index}
-                                    gameSolved={gameSolved}
-                                    handleClick={handleTileClick}
-                                    key={index}
-                              >
-                              </Tile>
-                        })}
+                  <Board ref={puzzle.container.ref} height={puzzle.container.size} gameSolved={puzzle.state.solved}>
+
+                        {puzzle.character.characterState === puzzle.character.defStates.ERROR
+                              && <h1>Ups Something Happened!</h1>}
+
+                        {puzzle.character.characterState === puzzle.character.defStates.LOADING
+                              && <h1>Loading...</h1>}
+
+                        {puzzle.character.characterState === puzzle.character.defStates.LOADED
+                              && puzzle.character.character
+                              && puzzle.boardArray.map((tile, index) => {
+                                    return <Tile
+                                          puzzle={puzzle}
+                                          id={tile}
+                                          index={index}
+                                          key={index}
+                                          handleClick={handleTileClick}
+                                    >
+                                    </Tile>
+                              })}
                   </Board>
 
-                  {gameSolved && gameStarted && <WinningDiv>✨YOU WON! ✨</WinningDiv>}
+                  {puzzle.state.solved && puzzle.state.started && <WinningDiv>✨YOU WON! ✨</WinningDiv>}
 
                   <ButtonContainer>
-                        {!gameStarted && <>
-                              <button onClick={() => handleShuffle()}>Start Game</button>
-                              {gameStarted ? <></> : <button onClick={() => handleCharacterChange()}>Change Image</button>}
+                        {!puzzle.state.started && <>
+                              <button onClick={() => handleStartGame()}>Start Game</button>
+                              {puzzle.state.started ? <></> : <button onClick={() => handleCharacterChange()}>Change Image</button>}
 
-                              <StyledLabel htmlFor="rows">rows:</StyledLabel>
-                              <StyledSelect id="rows" onChange={event => board.setGrid({ ...board.grid, rows: Number(event.target.value) })} >
+                              {/* <StyledLabel htmlFor="rows">rows:</StyledLabel> */}
+                              <StyledSelect id="rows" value={puzzle.grid.rows} onChange={event => puzzle.setGrid({ ...puzzle.grid, rows: Number(event.target.value) })} >
+                                    <option value={3} key={'default'}>Rows</option>
                                     {[...Array.from(Array(12).keys()).filter((row) => row > 1)].map((index) => {
-                                          return <option value={index} key={index}>{index}</option>
+                                          return <option value={index} key={index.toString()}>{index}</option>
 
                                     })}
                               </StyledSelect>
 
-                              <StyledLabel htmlFor="cols">cols:</StyledLabel>
-                              <StyledSelect id="cols" onChange={event => board.setGrid({ ...board.grid, cols: Number(event.target.value) })} >
+                              {/* <StyledLabel htmlFor="cols">cols:</StyledLabel> */}
+                              <StyledSelect id="cols" value={puzzle.grid.cols} onChange={event => puzzle.setGrid({ ...puzzle.grid, cols: Number(event.target.value) })} >
+                                    <option value={3} key={'default'}>Cols</option>
                                     {[...Array.from(Array(12).keys()).filter((col) => col > 1)].map((index) => {
-                                          return <option value={index} key={index}>{index}</option>
+                                          return <option value={index} key={index.toString()}>{index}</option>
 
                                     })}
                               </StyledSelect>
                         </>}
-                        {!gameSolved && gameStarted && <>
+                        {!puzzle.state.solved && puzzle.state.started && <>
+                              <button onClick={() => handleShuffle()}>Shuffle again</button>
                               <button onClick={() => handleRestartGame()}>Restart game</button>
-                              <button>{moves}</button>
+                              <button>{puzzle.state.moves}</button>
                         </>}
-                        {gameSolved && gameStarted && <button onClick={() => handleRestartGame()}>Play again</button>}
+                        {puzzle.state.solved && puzzle.state.started && <button onClick={() => handleRestartGame()}>Play again</button>}
                   </ButtonContainer>
 
             </BoardContainer >
@@ -171,7 +90,7 @@ export default Puzzle;
 const StyledLabel = styled('label')`
       margin: 0;
       color:  #bee5fd;
-      border-radius: 5px;
+      border-radius: 12px;
       font-weight: bold;
       text-transform: uppercase;    
 `
@@ -180,14 +99,22 @@ const StyledSelect = styled('select')`
       margin: 0;
       color:  #bee5fd;
       background-color: #3a4786;
-      border-radius: 5px;
+      border-radius: 12px;
       font-weight: bold;
       text-transform: uppercase;
-      border: 2px solid #97cd4d;
+      border: 2px solid #05b3c6;
+      transition: all 0.4s;
       &:hover{
             border: 2px solid #f674da;   
       }       
 `
+// #97cd4d
+// #3a4766
+// #f674da
+// #bee5fd
+// #05b3c6
+// #fff873
+// #e54358
 
 const BoardContainer: FC<{ children: ReactNode }> = ({ children }) => {
       return (
@@ -214,19 +141,19 @@ const Board = styled('ul') <IBoard>`
       margin: 0;
       height: ${props => props.height}px;
       width: 100%;
-      max-width: 625px;
-      max-height: 625px;
+      max-width: 600px;
+      max-height: 600px;
       font-size: 1rem;
       text-align: center;
       background-color: #97cd4d;
-      outline: 0.2rem solid ${props => props.gameSolved ? '#97cd4d' : '#f674da'};
+      /* outline: 0.2rem solid ${props => props.gameSolved ? '#97cd4d' : '#f674da'}; */
 
 `;
 
 const Title = styled.h1`
       color: #bee5fd;
       line-height: 1.7;
-      margin: auto;
+      margin: 1.2rem auto;
 `;
 
 
@@ -264,10 +191,11 @@ const ButtonContainer = styled('div')`
             padding: 1rem;
             color:  #bee5fd;
             background-color: #3a4786;
-            border-radius: 5px;
+            border-radius: 12px;
             font-weight: bold;
             text-transform: uppercase;
             border: 2px solid #97cd4d;
+            transition: all 0.4s;
             &:hover{
                   border: 2px solid #f674da;
             }
