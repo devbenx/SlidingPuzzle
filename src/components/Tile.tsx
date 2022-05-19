@@ -9,6 +9,7 @@ interface ITile {
             height: number,
       },
       gamesolved: number,
+      gamestarted: number,
       last: number,
       imgurl: string,
       tileprops: {
@@ -61,9 +62,9 @@ const Tile: FC<{
                         animate={{ scale: 1 }}
                         exit={{ scale: 0.9 }}
                         size={puzzle.tile.size}
-                        key={id}
                         imgurl={puzzle.character.character.image}
                         tileprops={tileProps}
+                        gamestarted={puzzle.state.started ? 1 : 0}
                         last={isLast ? 1 : 0}
                         onClick={() => onClickHandler()}
                         layout
@@ -89,15 +90,20 @@ const StyledTile = styled(motion.li) <ITile>`
       align-items: center;
       justify-content: center;
       outline: 0.2rem solid ${props => props.gamesolved === 1 ? '#97cd4d' : '#f674da'};
-      /* transition: all 0.4s; ON HOVER ISSUES */ 
+      z-index: 0;
+      /* transition: all 0.4s; ON HOVER ISSUES WITH FRAMER MOTION */ 
 
-      ${({ last }) => (last === 1) && `
+      ${({ last, gamestarted, gamesolved }) => (last === 1) && (gamestarted === 1) && `
             background: #3a4766;
+            &:hover{
+                  outline:  ${(last === 1 && gamestarted === 1) ? `0.2rem solid ${gamesolved === 1 ? '#97cd4d' : '#f674da'}` : '0.2rem solid #f674da'};
+                  z-index:  ${(last === 1 && gamestarted === 1) ? 'unset' : 100};
+            }
       `}
 
       &:hover{
-            outline:  ${props => props.last === 1 ? `0.2rem solid ${props.gamesolved === 1 ? '#97cd4d' : '#f674da'}` : '0.5rem solid #bee5fd'};
-            z-index:  ${props => props.last === 1 ? 'unset' : 100};
+            outline:  ${props => (props.gamestarted === 1 && props.last !== 1) ? `0.3rem solid ${props.gamesolved === 1 ? '#97cd4d' : '#bee5fd'}` : '0.2rem solid #f674da'};
+            z-index:  ${props => (props.gamestarted === 1 && props.last !== 1) ? 100 : 0};
       }
 `;
 

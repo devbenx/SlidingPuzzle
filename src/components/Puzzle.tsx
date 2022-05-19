@@ -145,7 +145,8 @@ const Board = styled('ul') <IBoard>`
       max-height: 600px;
       font-size: 1rem;
       text-align: center;
-      background-color: #97cd4d;
+      background-color: #3a4766;
+      color: #f674da;
       /* outline: 0.2rem solid ${props => props.gameSolved ? '#97cd4d' : '#f674da'}; */
 
 `;
