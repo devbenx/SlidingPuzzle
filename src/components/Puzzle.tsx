@@ -44,7 +44,7 @@ const Puzzle: FC = () => {
                                     >
                                     </Tile>
                               })}
-                        {puzzle.state.started ? <></> : <WinningDiv tileclicked={puzzle.state.tileClicked ? 1 : 0}>Click start</WinningDiv>}
+                        {!puzzle.state.started && puzzle.state.tileClicked ? <WinningDiv tileclicked={puzzle.state.tileClicked ? 1 : 0}>Click start</WinningDiv> : <></>}
                   </Board>
 
                   {puzzle.state.solved && puzzle.state.started && <WinningDiv>✨YOU WON! ✨</WinningDiv>}
@@ -168,7 +168,7 @@ const WinningDiv = styled(motion.div) <IWindiv>`
       font-size: 10vmin;
       font-weight: bold;
       background-color: #bee5fd;
-      color: ${props => props.tileclicked === 1 ? '#e54358' : '#f674da'};
+      color: ${props => props.tileclicked === 1 ? '#f674da' : '#f674da'};
       border-radius: 1rem;
       text-transform: uppercase;
 
