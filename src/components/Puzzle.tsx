@@ -39,11 +39,12 @@ const Puzzle: FC = () => {
                                           puzzle={puzzle}
                                           id={tile}
                                           index={index}
-                                          key={index}
+                                          key={index.toString()}
                                           handleClick={handleTileClick}
                                     >
                                     </Tile>
                               })}
+                        {puzzle.state.started ? <></> : <WinningDiv tileclicked={puzzle.state.tileClicked ? 1 : 0}>Click start</WinningDiv>}
                   </Board>
 
                   {puzzle.state.solved && puzzle.state.started && <WinningDiv>✨YOU WON! ✨</WinningDiv>}
@@ -108,13 +109,6 @@ const StyledSelect = styled('select')`
             border: 2px solid #f674da;   
       }       
 `
-// #97cd4d
-// #3a4766
-// #f674da
-// #bee5fd
-// #05b3c6
-// #fff873
-// #e54358
 
 const BoardContainer: FC<{ children: ReactNode }> = ({ children }) => {
       return (
@@ -157,8 +151,11 @@ const Title = styled.h1`
       margin: 1.2rem auto;
 `;
 
+interface IWindiv {
+      tileclicked?: number;
+}
 
-const WinningDiv = styled(motion.div)`
+const WinningDiv = styled(motion.div) <IWindiv>`
 
       position: absolute;
       width: auto;
@@ -171,8 +168,9 @@ const WinningDiv = styled(motion.div)`
       font-size: 10vmin;
       font-weight: bold;
       background-color: #bee5fd;
-      color: #f674da;
+      color: ${props => props.tileclicked === 1 ? '#e54358' : '#f674da'};
       border-radius: 1rem;
+      text-transform: uppercase;
 
 `;
 

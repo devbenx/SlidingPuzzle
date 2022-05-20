@@ -12,6 +12,7 @@ interface IGameState {
       started: boolean;
       solved: boolean;
       moves: number;
+      tileClicked: boolean;
 }
 
 interface ITile {
@@ -30,6 +31,7 @@ export const usePuzzle = () => {
             started: false,
             solved: false,
             moves: 0,
+            tileClicked: false,
       }
       const [gameState, setGameState] = useState<IGameState>(gameStateDefs);
 
@@ -60,7 +62,8 @@ export const usePuzzle = () => {
             setGameState({
                   started: false,
                   solved: false,
-                  moves: 0
+                  moves: 0,
+                  tileClicked: false,
             });
             sort(boardArray)
             character.changeCharacter();
@@ -73,7 +76,8 @@ export const usePuzzle = () => {
             setGameState({
                   started: true,
                   solved: false,
-                  moves: 0
+                  moves: 0,
+                  tileClicked: false,
             });
             shuffle();
 
@@ -147,6 +151,8 @@ export const usePuzzle = () => {
             const tilesTemp = [...tiles];
             [tilesTemp[src], tilesTemp[empty]] = [tilesTemp[empty], tilesTemp[src]];
             setGameState({ ...gameState, moves: gameState.moves + 1 });
+            setGameState({ ...gameState, tileClicked: false })
+            console.log({ gameState })
             return setBoardArray([...tilesTemp]);
       }
 
@@ -193,12 +199,18 @@ export const usePuzzle = () => {
 
       const tileClick = (index: number) => {
 
+
             if (gameState.started) {
+                  setGameState({ ...gameState, tileClicked: true })
                   swapTiles(index, boardArray.length - 1);
                   // console.log(`gameSolved: ${gameState.solved}`)
             } else {
+                  setTimeout(() => setGameState({ ...gameState, tileClicked: true })
+                        , 300)
+                  setGameState({ ...gameState, tileClicked: false })
                   console.log(`start game to swap tiles`)
             }
+            console.log({ gameState })
       }
 
       return {
